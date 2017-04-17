@@ -1,0 +1,24 @@
+{
+    "name": "@materia/socket-io",
+    "version": "0.0.1",
+    "description": "Use realtime in your application using socket.io",
+    "keywords": [
+        "realtime",
+        "communication"
+    ],
+    "main": "index.js",
+    "scripts": {
+        "start": "materia start --prod",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "",
+    "license": "MIT",
+    "materia": {
+        "display_name": "Socket.io",
+        "logo": "https://components.xamarin.com/resources/icons/component-2407/icon_114x114.png",
+        "setup": []
+    },
+    "dependencies": {
+        "socket.io": "^1.7.3"
+    }
+}

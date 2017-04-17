@@ -1,0 +1,22 @@
+<div ng-controller="SocketIoController" layout="column" flex>
+    <div layout="row" style="min-height: 50px; width:100%">
+        <div md-colors="{background: 'pink'}" style="width: 120px; padding: 10px" flex>
+            <h2>Socket.io configuration</h2>
+        </div>
+    </div>
+    <md-card style="min-height:300px;" flex>
+        <div style="padding-left:10px;">
+            <h3>server/socketio.js</h3>
+        </div>
+        <div layout="row" layout-sm="column" layout-align="space-around" ng-if="!data">
+            <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+        </div>
+        <div ng-if="data" layout="column" flex>
+            <div ui-ace="{
+                    theme:'dawn',
+                    mode: 'javascript',
+                    }" ng-model="data" flex></div>
+            <md-button ng-click="save(data)">Save</md-button>
+        </div>
+    </md-card>
+</div>
