@@ -4,6 +4,10 @@
             <h2>Socket.io configuration</h2>
         </div>
     </div>
+    <div md-colors="{background: 'blue'}" style="width: 120px; padding: 10px 0 18px">
+        <div style="text-align: center; font-size: 2.5em">{{user}}</div>
+        <div style="text-align: center">user{{ user > 1 ? 's' : '' }} connected</div>
+    </div>
     <md-card style="min-height:300px;" flex>
         <div style="padding-left:10px;">
             <h3>server/socketio.js</h3>

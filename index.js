@@ -3,26 +3,40 @@ class SocketIo {
         this.app = app
         this.io = require('socket.io')(this.app.server.server)
         this.config = config
+        this.user = 0
     }
     getModule() { return "web/js/main.js" }
     getTemplate() { return "web/index.html" }
 
     start() {
-        this.io.on('connection', (socket) => {
-            var path = require('path')
-            let p = path.join(this.app.path, 'server', 'socketio')
-            try {
-                require(p)
-            } catch (e) {
-
-            }
+        var path = require('path')
+        var defaultPath = path.join(this.app.path, 'node_modules', '@materia', 'socket-io', 'web', 'js', 'config.js')
+        let p = path.join(this.app.path, 'server', 'socketio')
+        try {
+            require(p)
             let socketioPath = require.resolve(p)
             if (require.cache[socketioPath]) {
                 delete require.cache[socketioPath]
             }
-            let config = require(p)
-            config(this.io, socket)
-        });
+            var path = p
+        } catch (e) {
+            path = defaultPath
+        }
+        let config = require(path)
+        this.watchUsers()
+        config(this.io)
+    }
+
+    watchUsers() {
+        this.app.io = {
+            userCount: 0
+        }
+        this.io.on('connection', (socket) => {
+            this.app.io.userCount++
+                socket.on('disconnect', () => {
+                    this.app.io.userCount--
+                })
+        })
     }
     uninstall(app) {}
 }

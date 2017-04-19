@@ -12,27 +12,45 @@ let socketIo = angular.module('socket-io', [
     $scope.path = path.join($rootScope.app.path, 'server', 'socketio.js')
 
     $scope.AddonsService = AddonsService
-    this.AppService = AppService
+    $scope.AppService = AppService
 
     $scope.save = (data) => {
         $rootScope.app.saveFile($scope.path, data, { mkdir: true }).then(() => {
-            this.AppService.reloadAll({ syncOnlyDatabase: true })
+            $scope.AppService.reloadAll({ syncOnlyDatabase: true })
         });
     }
 
+    $scope.watchUsers = () => {
+        setInterval(() => {
+            if (!$scope.$$phase) {
+                $scope.$apply(() => {
+                    $scope.user = $rootScope.app.io.userCount
+                })
+            }
+        }, 1000)
+    }
+
     function init() {
+        $scope.user = $rootScope.app.io.userCount
         try {
             require($scope.path)
-            var path = $scope.path
         } catch (e) {
-            path = $scope.defaultPath
+            fs.readFile($scope.defaultPath, "utf-8", (err, data) => {
+                if (err) {
+                    $scope.data = $scope.defaultPath
+                }
+                $scope.$apply(() => {
+                    $scope.data = data
+                })
+            });
         }
-        fs.readFile(path, "utf-8", (err, data) => {
+        fs.readFile($scope.path, "utf-8", (err, data) => {
             if (err) {
                 $scope.data = $scope.defaultPath
             }
             $scope.$apply(() => {
                 $scope.data = data
+                $scope.watchUsers()
             })
         });
     }
