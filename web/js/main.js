@@ -23,17 +23,11 @@ let socketIo = angular.module('socket-io', [
     function init() {
         try {
             require($scope.path)
+            var path = $scope.path
         } catch (e) {
-            fs.readFile($scope.defaultPath, "utf-8", (err, data) => {
-                if (err) {
-                    $scope.data = $scope.defaultPath
-                }
-                $scope.$apply(() => {
-                    $scope.data = data
-                })
-            });
+            path = $scope.defaultPath
         }
-        fs.readFile($scope.path, "utf-8", (err, data) => {
+        fs.readFile(path, "utf-8", (err, data) => {
             if (err) {
                 $scope.data = $scope.defaultPath
             }
