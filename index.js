@@ -3,7 +3,7 @@ class SocketIo {
         this.app = app
         this.io = require('socket.io')(this.app.server.server)
         this.config = config
-        this.user = 0
+        this.userCount = 0
     }
     getModule() { return "web/js/main.js" }
     getTemplate() { return "web/index.html" }
@@ -28,14 +28,13 @@ class SocketIo {
     }
 
     watchUsers() {
-        this.app.io = {
-            userCount: 0
-        }
         this.io.on('connection', (socket) => {
-            this.app.io.userCount++
-                socket.on('disconnect', () => {
-                    this.app.io.userCount--
-                })
+            this.userCount++
+                this.io.emit('user-connected', this.userCount)
+            socket.on('disconnect', () => {
+                this.userCount--
+                    this.io.emit('user-disconnected', this.userCount)
+            })
         })
     }
     uninstall(app) {}

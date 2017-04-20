@@ -7,7 +7,6 @@ let socketIo = angular.module('socket-io', [
     'ngMessages',
     'ngAnimate'
 ]).controller('SocketIoController', ($scope, $rootScope, AddonsService, QueryService, AppService) => {
-
     $scope.defaultPath = path.join($rootScope.app.path, 'node_modules', '@materia', 'socket-io', 'web', 'js', 'config.js')
     $scope.path = path.join($rootScope.app.path, 'server', 'socketio.js')
 
@@ -19,19 +18,21 @@ let socketIo = angular.module('socket-io', [
             $scope.AppService.reloadAll({ syncOnlyDatabase: true })
         });
     }
-
     $scope.watchUsers = () => {
-        setInterval(() => {
-            if (!$scope.$$phase) {
-                $scope.$apply(() => {
-                    $scope.user = $rootScope.app.io.userCount
-                })
-            }
-        }, 1000)
+        var socket = require($rootScope.app.path + '/node_modules/@materia/socket-io/node_modules/socket.io-client/dist/socket.io')('http://localhost:8080');
+        socket.on('user-connected', (data) => {
+            $scope.$apply(() => {
+                $scope.user = data - 1
+            })
+        });
+        socket.on('user-disconnected', (data) => {
+            $scope.$apply(() => {
+                $scope.user = data - 1
+            })
+        });
     }
 
     function init() {
-        $scope.user = $rootScope.app.io.userCount
         try {
             require($scope.path)
         } catch (e) {
@@ -50,9 +51,9 @@ let socketIo = angular.module('socket-io', [
             }
             $scope.$apply(() => {
                 $scope.data = data
-                $scope.watchUsers()
             })
         });
+        $scope.watchUsers()
     }
 
     init()

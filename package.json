@@ -1,6 +1,6 @@
 {
     "name": "@materia/socket-io",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "description": "Use realtime in your application using socket.io",
     "keywords": [
         "realtime",
@@ -19,6 +19,7 @@
         "setup": []
     },
     "dependencies": {
-        "socket.io": "^1.7.3"
+        "socket.io": "^1.7.3",
+        "socket.io-client": "^1.7.3"
     }
 }
