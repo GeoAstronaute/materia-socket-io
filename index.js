@@ -35,6 +35,10 @@ class SocketIo {
                 this.userCount--
                     this.io.emit('user-disconnected', this.userCount)
             })
+            socket.on('local connect', () => {
+                this.userCount--
+                    this.io.emit('rectify', this.userCount)
+            })
         })
     }
     uninstall(app) {}
