@@ -36,8 +36,10 @@ class SocketIo {
                     this.io.emit('user-disconnected', this.userCount)
             })
             socket.on('local connect', () => {
-                this.userCount--
-                    this.io.emit('rectify', this.userCount)
+                if (this.userCount) {
+                    this.userCount--
+                }
+                this.io.emit('rectify', this.userCount)
             })
         })
     }
