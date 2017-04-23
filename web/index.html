@@ -1,8 +1,29 @@
 <div ng-controller="SocketIoController" layout="column" flex>
-    <div md-colors="{background: 'blue'}" style="width: 120px; padding: 10px 0 18px">
-        <div style="text-align: center; font-size: 2.5em">{{user}}</div>
-        <div style="text-align: center">user{{ user > 1 ? 's' : '' }} connected</div>
+    <div layout="row">
+        <div md-colors="{background: 'blue'}" style="width: 120px; padding: 10px 0 18px">
+            <div style="text-align: center;">
+                <md-icon style="font-size: 2.5em; color: white">people</md-icon>
+            </div>
+            <div style="text-align: center; font-size: 2.5em">{{user}}
+
+            </div>
+
+            <div style="text-align: center">user{{ user > 1 ? 's' : '' }} connected</div>
+
+        </div>
+        <div style="padding:10px;">
+            <h4>To enable connections, add this to your <strong style="color:darkgreen">index.html</strong> file:</h4>
+            <p style="color:darkred;font-weight:bold;">
+                < script src="/socket.io/socket.io.js">
+                    < /script>
+            </p>
+            <p style="color:darkred;font-weight:bold;">
+                < script>var socket = io()
+                    < /script>
+            </p>
+        </div>
     </div>
+
     <div layout="row" style="min-height: 50px; width:100%">
         <div md-colors="{background: 'pink'}" style="width: 120px; padding: 10px" flex>
             <h2>Socket.io configuration</h2>
@@ -16,10 +37,7 @@
             <md-progress-circular md-mode="indeterminate"></md-progress-circular>
         </div>
         <div ng-if="data" layout="column" flex>
-            <div ui-ace="{
-                    theme:'dawn',
-                    mode: 'javascript',
-                    }" ng-model="data" flex></div>
+            <div ui-ace="ace" ng-model="data" flex></div>
             <md-button ng-click="save(data)">Save</md-button>
         </div>
     </md-card>

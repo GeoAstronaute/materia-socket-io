@@ -13,6 +13,14 @@ let socketIo = angular.module('socket-io', [
     $scope.AddonsService = AddonsService
     $scope.AppService = AppService
 
+    $scope.ace = {
+        theme: 'dawn',
+        mode: 'javascript',
+        onLoad: function(_editor) {
+            _editor.$blockScrolling = Infinity
+        }
+    }
+
     $scope.save = (data) => {
         $rootScope.app.saveFile($scope.path, data, { mkdir: true }).then(() => {
             $scope.AppService.reloadAll({ syncOnlyDatabase: true })
