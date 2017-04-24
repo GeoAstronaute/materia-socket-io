@@ -28,7 +28,7 @@ let socketIo = angular.module('socket-io', [
     }
     $scope.watchUsers = () => {
         $scope.user = 0
-        var socket = require($rootScope.app.path + '/node_modules/socket.io-client/dist/socket.io')('http://localhost:8080');
+        var socket = require($rootScope.app.path + '/node_modules/@materia/socket-io/node_modules/socket.io-client/dist/socket.io')('http://localhost:8080');
         socket.on('user-connected', (data) => {
             $scope.$apply(() => {
                 $scope.user = data
