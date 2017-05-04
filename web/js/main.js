@@ -1,17 +1,29 @@
 var fs = require('fs')
 var path = require('path')
 
+
 let socketIo = angular.module('socket-io', [
     'ngResource',
     'ngSanitize',
     'ngMessages',
     'ngAnimate'
-]).controller('SocketIoController', ($scope, $rootScope, AddonsService, QueryService, AppService) => {
+]).controller('SocketIoController', ($scope, $rootScope, AddonsService, QueryService, AppService, LiveService) => {
     $scope.defaultPath = path.join($rootScope.app.path, 'node_modules', '@materia', 'socket-io', 'web', 'js', 'config.js')
     $scope.path = path.join($rootScope.app.path, 'server', 'socketio.js')
 
     $scope.AddonsService = AddonsService
     $scope.AppService = AppService
+    let packageJsonPath = require.resolve(path.join(this.app.path, '.materia', 'server.json'))
+    if (require.cache[packageJsonPath]) {
+        delete require.cache[packageJsonPath]
+    }
+    let serverConfig = require(path.join($rootScope.app.path, '.materia', 'server.json'))
+
+    if (serverConfig.prod && serverConfig.prod.web && serverConfig.prod.web.live) {
+        $scope.socketLiveUrl = serverConfig.prod.web.live.host + ':' + serverConfig.prod.web.live.port
+    } else {
+        $scope.socketLocalUrl = 'http://localhost:8080'
+    }
 
     $scope.ace = {
         theme: 'dawn',
@@ -28,7 +40,12 @@ let socketIo = angular.module('socket-io', [
     }
     $scope.watchUsers = () => {
         $scope.user = 0
-        var socket = require($rootScope.app.path + '/node_modules/@materia/socket-io/node_modules/socket.io-client/dist/socket.io')('http://localhost:8080');
+        if (LiveService.isLive) {
+            var socket = require($rootScope.app.path + '/node_modules/@materia/socket-io/node_modules/socket.io-client/dist/socket.io')($scope.socketLiveUrl);
+        } else {
+            var socket = require($rootScope.app.path + '/node_modules/@materia/socket-io/node_modules/socket.io-client/dist/socket.io')($scope.socketLocalUrl);
+        }
+
         socket.on('user-connected', (data) => {
             $scope.$apply(() => {
                 $scope.user = data
