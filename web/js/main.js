@@ -1,7 +1,6 @@
 var fs = require('fs')
 var path = require('path')
 
-
 let socketIo = angular.module('socket-io', [
     'ngResource',
     'ngSanitize',
@@ -19,11 +18,11 @@ let socketIo = angular.module('socket-io', [
     }
     let serverConfig = require(path.join($rootScope.app.path, '.materia', 'server.json'))
 
-    if (serverConfig.prod && serverConfig.prod.web && serverConfig.prod.web.live) {
+    if (serverConfig.prod && serverConfig.prod.web) {
         $scope.socketLiveUrl = 'http://' + serverConfig.prod.web.host + ':' + serverConfig.prod.web.port
-    } else {
-        $scope.socketLocalUrl = 'http://localhost:8080'
     }
+
+    $scope.socketLocalUrl = 'http://localhost:8080'
 
     $scope.ace = {
         theme: 'dawn',
@@ -40,8 +39,9 @@ let socketIo = angular.module('socket-io', [
     }
     $scope.watchUsers = () => {
         $scope.user = 0
+        var socket
         if (LiveService.isLive) {
-            var socket = require($rootScope.app.path + '/node_modules/@materia/socket-io/node_modules/socket.io-client/dist/socket.io')($scope.socketLiveUrl);
+            socket = require($rootScope.app.path + '/node_modules/@materia/socket-io/node_modules/socket.io-client/dist/socket.io')($scope.socketLiveUrl);
         } else {
             socket = require($rootScope.app.path + '/node_modules/@materia/socket-io/node_modules/socket.io-client/dist/socket.io')($scope.socketLocalUrl);
         }
@@ -58,10 +58,16 @@ let socketIo = angular.module('socket-io', [
         });
         socket.on('connect', () => {
             socket.emit('local connect')
+
         })
-        socket.on('rectify', (data) => {
+        socket.on('disconnect', () => {
+            socket.emit('local disconnect')
+        })
+
+        socket.on('rectify', (data, localConnection) => {
             $scope.$apply(() => {
-                $scope.user = data
+                $scope.user = data - localConnection
+                $scope.localConnection = localConnection
             })
         })
     }
@@ -92,5 +98,4 @@ let socketIo = angular.module('socket-io', [
 
     init()
 })
-
 module.exports = socketIo

@@ -4,6 +4,7 @@ class SocketIo {
         this.io = require('socket.io')(this.app.server.server)
         this.config = config
         this.userCount = 0
+        this.localConnection = 0
     }
     getModule() { return "web/js/main.js" }
     getTemplate() { return "web/index.html" }
@@ -36,7 +37,11 @@ class SocketIo {
                     this.io.emit('user-disconnected', this.userCount)
             })
             socket.on('local connect', () => {
-                this.io.emit('rectify', this.userCount)
+                this.localConnection++
+                    this.io.emit('rectify', this.userCount, this.localConnection)
+            })
+            socket.on('local disconnect', () => {
+                this.localConnecton = 0
             })
         })
     }
