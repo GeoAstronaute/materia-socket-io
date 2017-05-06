@@ -45,6 +45,7 @@ let socketIo = angular.module('socket-io', [
         } else {
             socket = require($rootScope.app.path + '/node_modules/@materia/socket-io/node_modules/socket.io-client/dist/socket.io')($scope.socketLocalUrl);
         }
+        $scope.socket = socket
 
         socket.on('user-connected', (data) => {
             $scope.$apply(() => {
@@ -60,15 +61,13 @@ let socketIo = angular.module('socket-io', [
             socket.emit('local connect')
 
         })
-        socket.on('disconnect', () => {
-            socket.emit('local disconnect')
-        })
-
-        socket.on('rectify', (data, localConnection) => {
+        socket.on('rectify', (data) => {
             $scope.$apply(() => {
-                $scope.user = data - localConnection
-                $scope.localConnection = localConnection
+                $scope.user = data
             })
+        })
+        $scope.$on("$destroy", () => {
+            $scope.socket.close()
         })
     }
 
