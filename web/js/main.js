@@ -43,7 +43,7 @@ let socketIo = angular.module('socket-io', [
         if (LiveService.isLive) {
             var socket = require($rootScope.app.path + '/node_modules/@materia/socket-io/node_modules/socket.io-client/dist/socket.io')($scope.socketLiveUrl);
         } else {
-            var socket = require($rootScope.app.path + '/node_modules/@materia/socket-io/node_modules/socket.io-client/dist/socket.io')($scope.socketLocalUrl);
+            socket = require($rootScope.app.path + '/node_modules/@materia/socket-io/node_modules/socket.io-client/dist/socket.io')($scope.socketLocalUrl);
         }
 
         socket.on('user-connected', (data) => {
