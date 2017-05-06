@@ -20,7 +20,7 @@ let socketIo = angular.module('socket-io', [
     let serverConfig = require(path.join($rootScope.app.path, '.materia', 'server.json'))
 
     if (serverConfig.prod && serverConfig.prod.web && serverConfig.prod.web.live) {
-        $scope.socketLiveUrl = 'http://' + serverConfig.prod.web.live.host + ':' + serverConfig.prod.web.live.port
+        $scope.socketLiveUrl = 'http://' + serverConfig.prod.web.host + ':' + serverConfig.prod.web.port
     } else {
         $scope.socketLocalUrl = 'http://localhost:8080'
     }
