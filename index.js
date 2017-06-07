@@ -1,3 +1,18 @@
+const defaultCode = `module.exports = function(io) {
+    io.on('connection', (socket) => {
+        //TODO
+        // example :  socket.on('disconnect', () => { console.log("a user disconnect")})
+    })
+}`
+
+const requireWithoutCache = (name) => {
+    let p = require.resolve(name)
+    if (require.cache[p]) {
+        delete require.cache[p]
+    }
+    return require(name)
+}
+
 class SocketIo {
     constructor(app, config) {
         this.app = app
@@ -9,31 +24,26 @@ class SocketIo {
     getTemplate() { return "web/index.html" }
 
     start() {
-        var path = require('path')
-        var defaultPath = path.join(this.app.path, 'node_modules', '@materia', 'socket-io', 'web', 'js', 'config.js')
+        const path = require('path')
         let p = path.join(this.app.path, 'server', 'socketio')
+
         try {
-            require(p)
-            let socketioPath = require.resolve(p)
-            if (require.cache[socketioPath]) {
-                delete require.cache[socketioPath]
-            }
-            var path = p
+            let script = requireWithoutCache(p)
+            this.watchUsers()
+            script(this.io)
         } catch (e) {
-            path = defaultPath
+            return this.app.saveFile(`${p}.js`, defaultCode, { mkdir: true })
+                .then(() => this.start())
         }
-        let config = require(path)
-        this.watchUsers()
-        config(this.io)
     }
 
     watchUsers() {
         this.io.on('connection', (socket) => {
             this.userCount++
-                this.io.emit('user-connected', this.userCount)
+            this.io.emit('user-connected', this.userCount)
             socket.on('disconnect', () => {
                 this.userCount--
-                    this.io.emit('user-disconnected', this.userCount)
+                this.io.emit('user-disconnected', this.userCount)
             })
             socket.on('local connect', () => {
                 this.io.emit('rectify', this.userCount)

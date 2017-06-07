@@ -1,25 +1,23 @@
-var fs = require('fs')
-var path = require('path')
-
-let socketIo = angular.module('socket-io', [
+let socketIoModule = angular.module('socket-io', [
     'ngResource',
     'ngSanitize',
     'ngMessages',
     'ngAnimate'
 ]).controller('SocketIoController', ($scope, $rootScope, AddonsService, QueryService, AppService, LiveService) => {
-    $scope.defaultPath = path.join($rootScope.app.path, 'node_modules', '@materia', 'socket-io', 'web', 'js', 'config.js')
+    const fs = require('fs')
+    const path = require('path')
+
+    let appRequire = require('./scripts/fix/materia-addon-require')(path.join($rootScope.app.path, 'web', 'js'))
+    const Socketio = appRequire('socket.io-client/dist/socket.io')
+
     $scope.path = path.join($rootScope.app.path, 'server', 'socketio.js')
 
     $scope.AddonsService = AddonsService
     $scope.AppService = AppService
-    let packageJsonPath = require.resolve(path.join(this.app.path, '.materia', 'server.json'))
-    if (require.cache[packageJsonPath]) {
-        delete require.cache[packageJsonPath]
-    }
-    let serverConfig = require(path.join($rootScope.app.path, '.materia', 'server.json'))
-
-    if (serverConfig.prod && serverConfig.prod.web) {
-        $scope.socketLiveUrl = 'http://' + serverConfig.prod.web.host + ':' + serverConfig.prod.web.port
+ 
+    let webConfig = $rootScope.app.config.get('prod', 'web')
+    if (webConfig) {
+        $scope.socketLiveUrl = `http://${webConfig.host}:${webConfig.port}`
     }
 
     $scope.socketLocalUrl = 'http://localhost:8080'
@@ -33,35 +31,31 @@ let socketIo = angular.module('socket-io', [
     }
 
     $scope.save = (data) => {
-        $rootScope.app.saveFile($scope.path, data, { mkdir: true }).then(() => {
-            $scope.AppService.reloadAll({ syncOnlyDatabase: true })
-        });
+        return $rootScope.app.saveFile($scope.path, data, { mkdir: true })
+            .then(() => $scope.AppService.reloadAll({ syncOnlyDatabase: true }))
     }
     $scope.watchUsers = () => {
         $scope.user = 0
-        var socket
+        let socketUrl = $scope.socketLocalUrl
         if (LiveService.isLive) {
-            socket = require($rootScope.app.path + '/node_modules/@materia/socket-io/node_modules/socket.io-client/dist/socket.io')($scope.socketLiveUrl);
-        } else {
-            socket = require($rootScope.app.path + '/node_modules/@materia/socket-io/node_modules/socket.io-client/dist/socket.io')($scope.socketLocalUrl);
+            socketUrl = $scope.socketLiveUrl
         }
-        $scope.socket = socket
+        $scope.socket = Socketio(socketUrl)
 
-        socket.on('user-connected', (data) => {
+        $scope.socket.on('user-connected', (data) => {
             $scope.$apply(() => {
                 $scope.user = data
             })
         });
-        socket.on('user-disconnected', (data) => {
+        $scope.socket.on('user-disconnected', (data) => {
             $scope.$apply(() => {
                 $scope.user = data
             })
         });
-        socket.on('connect', () => {
-            socket.emit('local connect')
-
+        $scope.socket.on('connect', () => {
+            $scope.socket.emit('local connect')
         })
-        socket.on('rectify', (data) => {
+        $scope.socket.on('rectify', (data) => {
             $scope.$apply(() => {
                 $scope.user = data
             })
@@ -72,21 +66,10 @@ let socketIo = angular.module('socket-io', [
     }
 
     function init() {
-        try {
-            require($scope.path)
-        } catch (e) {
-            fs.readFile($scope.defaultPath, "utf-8", (err, data) => {
-                if (err) {
-                    $scope.data = $scope.defaultPath
-                }
-                $scope.$apply(() => {
-                    $scope.data = data
-                })
-            });
-        }
+        require($scope.path)
         fs.readFile($scope.path, "utf-8", (err, data) => {
             if (err) {
-                $scope.data = $scope.defaultPath
+                return $scope.data = defaultCode
             }
             $scope.$apply(() => {
                 $scope.data = data
@@ -97,4 +80,4 @@ let socketIo = angular.module('socket-io', [
 
     init()
 })
-module.exports = socketIo
+module.exports = socketIoModule
