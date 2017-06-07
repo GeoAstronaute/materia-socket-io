@@ -7,7 +7,7 @@ let socketIoModule = angular.module('socket-io', [
     const fs = require('fs')
     const path = require('path')
 
-    let appRequire = require('./scripts/fix/materia-addon-require')(path.join($rootScope.app.path, 'web', 'js'))
+    let appRequire = require('./scripts/fix/materia-addon-require')('@materia/socket-io', path.join($rootScope.app.path, 'web', 'js'))
     const Socketio = appRequire('socket.io-client/dist/socket.io')
 
     $scope.path = path.join($rootScope.app.path, 'server', 'socketio.js')
@@ -34,6 +34,7 @@ let socketIoModule = angular.module('socket-io', [
         return $rootScope.app.saveFile($scope.path, data, { mkdir: true })
             .then(() => $scope.AppService.reloadAll({ syncOnlyDatabase: true }))
     }
+
     $scope.watchUsers = () => {
         $scope.user = 0
         let socketUrl = $scope.socketLocalUrl
