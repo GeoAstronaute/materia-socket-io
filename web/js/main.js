@@ -66,7 +66,7 @@ let socketIoModule = angular.module('socket-io', [
     }
 
     function init() {
-        require($scope.path)
+        //require($scope.path)
         fs.readFile($scope.path, "utf-8", (err, data) => {
             if (err) {
                 return $scope.data = defaultCode
