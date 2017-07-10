@@ -1,5 +1,5 @@
 const defaultCode = `module.exports = function(io) {
-    io.on('connection', (socket) => {
+    io.on('connection', (socket, app) => {
         //TODO
         // example :  socket.on('disconnect', () => { console.log("a user disconnect")})
     })
@@ -30,7 +30,7 @@ class SocketIo {
         try {
             let script = requireWithoutCache(p)
             this.watchUsers()
-            script(this.io)
+            script(this.io, this.app)
         } catch (e) {
             return this.app.saveFile(`${p}.js`, defaultCode, { mkdir: true })
                 .then(() => this.start())

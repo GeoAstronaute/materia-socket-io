@@ -1,6 +1,6 @@
 {
     "name": "@materia/socket-io",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "description": "Use realtime in your application using socket.io",
     "keywords": [
         "realtime",
@@ -15,7 +15,7 @@
     "license": "MIT",
     "materia": {
         "display_name": "Socket.io",
-        "logo": "https://components.xamarin.com/resources/icons/component-2407/icon_114x114.png",
+        "logo": "http://atomrace.com/blog/wp-content/uploads/2016/04/SOCKETIOICON.gif",
         "setup": []
     },
     "dependencies": {
